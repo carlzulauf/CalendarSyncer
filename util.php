@@ -2,7 +2,7 @@
 
 class ZLogger {
 
-    public static $path = "/home/carl/CalendarSyncer/";
+    public static $path = ""; // use current working directory
     public static $file = "CalendarSyncer.log";
     public static $threshold = 10; // 0 - log everything, 10 - log nothing
 
