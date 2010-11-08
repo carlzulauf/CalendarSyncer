@@ -25,7 +25,9 @@ syncMeetupWithGoogle(
     // MEETUP API URI
     // Fill in the meetup.com API URI for your calendar. The example below shows
     // the expected format. Replace the {bracketted} portions with your own values.
-    'http://api.meetup.com/events/?group_id={your meetup group ID#}&key={your meetup API key}',
+    // FYI: if your meetup group url is http://www.meetup.com/my-fave-group then
+    // my-fave-group is your group_urlname
+    'http://api.meetup.com/events/?group_urlname={your meetup group name}&key={your meetup API key}',
     
     // GOOGLE CALENDAR USERNAME
     // Fill in your google calendar username.
