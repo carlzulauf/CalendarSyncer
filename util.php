@@ -14,7 +14,7 @@ class ZLogger {
     }
 
     public static function dump ( $name, $var, $importance = 0, $file = false ) {
-        self::log( "$name\n" . var_dump( $var ), $importance, $file );
+        self::log( "$name\n" . print_r( $var, 1 ), $importance, $file );
     }
 
     public static function pretty ( $name, $var, $importance = 1, $file = false ) {
@@ -38,6 +38,7 @@ function syncMeetupWithGoogle( $meetupURI, $googleUser, $googlePass, $calendarNa
         }
     }
     
+    ZLogger::log("Attempting to retrieve Google Calendar info for $googleUser");
     for ( $attempts=0; $attempts<$GLOBALS['maxConnectAttempts']; $attempts++ ) {
         try {
             $gdataClient = getGdataClient( $googleUser, $googlePass );
@@ -49,9 +50,15 @@ function syncMeetupWithGoogle( $meetupURI, $googleUser, $googlePass, $calendarNa
             break;
         }
         catch (Exception $e) {
+            ZLogger::dump("Exception caught while attempting to retrieve Google Calendar data", $e, 4);
             // just keep trying
         }
     }
+    if ( ! is_array( $googleEvents) ) {
+        ZLogger::log("Unable to retrieve google calendar info. Quitting.");
+        exit();
+    }
+    ZLogger::log("Completed retrieval of Google Calendar information. Attempting sync.");
 
     foreach( $meetupEvents as $url => $event ) {
         if ( array_key_exists( $url, $googleEvents ) ) {

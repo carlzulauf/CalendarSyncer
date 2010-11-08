@@ -1,2 +1,3 @@
 config-override.php
 *.log
+test*

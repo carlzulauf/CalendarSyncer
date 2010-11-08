@@ -8,17 +8,23 @@ Zend_Loader::loadClass('Zend_Gdata_HttpClient');
 Zend_Loader::loadClass('Zend_Gdata_Calendar');
 
 function getGdataClient( $user, $pass ) {
+    ZLogger::log("Authenticating with Google Calendar API",4);
     $service = Zend_Gdata_Calendar::AUTH_SERVICE_NAME;
     $client = Zend_Gdata_ClientLogin::getHttpClient($user,$pass,$service);
+    ZLogger::log("Authenticated with Google Calendar API",4);
     return $client;
 }
 
-function getNamedCalendar(Zend_Gdata_Calendar $gdataCal,$calendarName="Omaha Atheists") {
+function getNamedCalendar(Zend_Gdata_Calendar $gdataCal,$calendarName) {
+    ZLogger::log("Looking up calendar '$calendarName'",4);
     //$gdataCal = new Zend_Gdata_Calendar($client);
     $calFeed = $gdataCal->getCalendarListFeed();
     foreach ($calFeed as $key => $calendar) {
         //echo "calendar $key: " . $calendar->title->text . "\n";
-        if ($calendar->title->text == $calendarName) return $calendar;
+        if ($calendar->title->text == $calendarName) {
+            ZLogger::log("Found calendar '$calendarName'",4);
+            return $calendar;
+        }
     }
 }
 
@@ -57,7 +63,7 @@ function createGoogleEvent (
 
 function getGoogleEvents( Zend_Gdata_Calendar $service, $calendar )
 {
-
+    ZLogger::log("Retrieving events from Google Calendar",4);
     //$service = new Zend_Gdata_Calendar($client);
 
     $query = $service->newEventQuery();
@@ -66,6 +72,7 @@ function getGoogleEvents( Zend_Gdata_Calendar $service, $calendar )
     $query->setProjection('full');
     $query->setOrderby('starttime');
     $query->setFutureevents('true');
+    $query->setMaxResults(1000);
 
     $eventFeed = $service->getCalendarEventFeed($query);
 
@@ -74,14 +81,21 @@ function getGoogleEvents( Zend_Gdata_Calendar $service, $calendar )
     foreach( $eventFeed as $event ) {
         $content = $event->content->__toString();
         if ( preg_match( $uriPattern, $content, $match ) ) {
-            $sync = new SyncedEvent();
-            $sync->meetup_uri = $match[0];
-            $sync->description = trim($content);
-            $sync->gdata_object = $event;
-            $sync->title = $event->title->__toString();
-            $sync->time = strtotime($event->when[0]->getStartTime());
-            $sync->where = $event->where[0]->__toString();
-            $events[$sync->meetup_uri] = $sync;
+            // check for duplicates
+            if ( ! array_key_exists( $match[0], $events ) ) {
+                ZLogger::log("Found event on Google Calendar: {$match[0]}",4);
+                $sync = new SyncedEvent();
+                $sync->meetup_uri = $match[0];
+                $sync->description = trim($content);
+                $sync->gdata_object = $event;
+                $sync->title = $event->title->__toString();
+                $sync->time = strtotime($event->when[0]->getStartTime());
+                $sync->where = $event->where[0]->__toString();
+                $events[$sync->meetup_uri] = $sync;
+            } else {
+                ZLogger::log("Duplicate event ({$match[0]}). Deleting.");
+                $event->delete();
+            }
         }
     }
     return $events;

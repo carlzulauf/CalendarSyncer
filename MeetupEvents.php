@@ -6,9 +6,15 @@
 
 function getMeetupEvents($api_url, $locationFilter = false, $descriptionFilter = "")
 {
+    ZLogger::log("Attempting to retrieve Meetup event JSON from $api_url");
     $calendarJSON = file_get_contents($api_url);
-    $calendarObj = json_decode($calendarJSON);
-    ZLogger::pretty( "getMeetupEvents()-> decoded calendar JSON", $calendarObj );
+    ZLogger::log("Obtained result from API: " . substr($calendarJSON, 0, 40) . "...");
+    $calendarObj = json_decode(utf8_encode($calendarJSON));
+    if ( ! $calendarObj ) {
+        ZLogger::log( "Failed to parse JSON. JSON Error # " . json_last_error() );
+        exit();
+    }
+    ZLogger::dump( "getMeetupEvents()-> decoded calendar JSON", $calendarObj );
     $meetupEvents = array();
     foreach( $calendarObj->results as $meetupEvent ) {
         // build address on a single line
