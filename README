@@ -1,0 +1,14 @@
+Simple PHP script which syncs meetup.com events with a google calendar.
+
+Edit config.php before attempting to run this. Your meetup.com and Google Calendar information will go here.
+
+Once configured you can run sync.php to sync the calendar.
+
+The recommended usage is to create a cron entry which syncs your calendar(s) on a regular interval. Every 30 minutes seems to work well.
+
+This script is open source software licensed under the Apache 2.0 License.
+
+http://www.apache.org/licenses/LICENSE-2.0.html
+
+Author: Carl Zulauf
+carl@linkleaf.com
