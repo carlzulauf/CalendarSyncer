@@ -14,7 +14,9 @@ class ZLogger {
     }
 
     public static function dump ( $name, $var, $importance = 0, $file = false ) {
-        self::log( "$name\n" . print_r( $var, 1 ), $importance, $file );
+        ob_start();
+        var_dump( $var );
+        self::log( "$name\n" . ob_get_clean(), $importance, $file );
     }
 
     public static function pretty ( $name, $var, $importance = 1, $file = false ) {
@@ -22,8 +24,10 @@ class ZLogger {
     }
 }
 
-function syncMeetupWithGoogle( $meetupURI, $googleUser, $googlePass, $calendarName, $location = false, $description = "" ) {
-
+function syncMeetupWithGoogle( $meetupApiKey, $meetupGroup, $googleUser, $googlePass, $calendarName, $location = false, $description = "" ) {
+    
+    $meetupURI = "http://api.meetup.com/events/?status=autoscheduled,upcoming&before=12m&group_urlname={$meetupGroup}&key={$meetupApiKey}";
+    
     echo "Starting sync of $calendarName @ " . date("r") . ".\n";
     ZLogger::log("Starting sync of $calendarName @ " . date("r") . ".");
     
@@ -34,6 +38,7 @@ function syncMeetupWithGoogle( $meetupURI, $googleUser, $googlePass, $calendarNa
             break;
         }
         catch (Exception $e) {
+            ZLogger::dump("Exception caught while attempting to retrieve Meetup Calendar data", $e, 4);
             // just keep trying
         }
     }

@@ -22,12 +22,17 @@ $maxConnectAttempts=5;
 
 syncMeetupWithGoogle(
 
-    // MEETUP API URI
-    // Fill in the meetup.com API URI for your calendar. The example below shows
-    // the expected format. Replace the {bracketted} portions with your own values.
-    // FYI: if your meetup group url is http://www.meetup.com/my-fave-group then
-    // my-fave-group is your group_urlname
-    'http://api.meetup.com/events/?group_urlname={your meetup group name}&key={your meetup API key}',
+    // MEETUP API KEY
+    // Put your Meetup.com API key here. You can look up what your API is here:
+    // http://www.meetup.com/meetup_api/key/
+    'meetup API key',
+    
+    // GROUP URL NAME
+    // Fill in the group name you want to sync with, as shown in the meetup URL
+    // Example: if your meetup group url is http://www.meetup.com/my-fave-group
+    //          then my-fave-group is your group url name
+    'group url name',
+    
     
     // GOOGLE CALENDAR USERNAME
     // Fill in your google calendar username.
@@ -40,7 +45,7 @@ syncMeetupWithGoogle(
     // GOOGLE CALENDAR NAME
     // The name of the specific calendar you want to sync with.
     // If you are using your default google calendar this is probably your
-    // email address
+    // email address or simply 'default'
     'my.google.username@gmail.com',
     
     // LOCATION (WHERE) FILTER
